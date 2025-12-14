@@ -1,0 +1,100 @@
+{
+  "$schema": "Предлагаемая структура для ECA данных",
+  
+  "activities": [
+    {
+      "id": "ECA0003PRI",
+      "name": "Around the World Club",
+      "category": "clubs",
+      "level": "primary",
+      "fee": 0,
+      "isFree": true,
+      
+      "yearGroups": {
+        "min": 3,
+        "max": 4,
+        "labels": ["Year 3", "Year 4"]
+      },
+      
+      "schedule": {
+        "day": "Monday",
+        "days": ["Monday"],
+        "time": {
+          "start": "15:30",
+          "end": "16:20"
+        }
+      },
+      
+      "location": "Year 3 Yellow",
+      
+      "teachers": [
+        "Richard Pompilis",
+        "Charmaine Edjan"
+      ],
+      
+      "capacity": {
+        "min": 5,
+        "max": 18
+      },
+      
+      "tags": ["geography", "culture"],
+      "inviteOnly": false,
+      "provider": "headstart"
+    }
+  ],
+  
+  "categories": {
+    "clubs": "Клубы",
+    "sports": "Спорт",
+    "boosters": "Дополнительные занятия",
+    "vapp": "Программы для одарённых",
+    "aen": "Дополнительная поддержка",
+    "eal": "Английский как доп. язык",
+    "academies": "Академии",
+    "dance": "Танцы",
+    "lamda": "LAMDA (драма/речь)",
+    "languages": "Языки",
+    "robotics": "Робототехника",
+    "coding": "Программирование",
+    "martial_arts": "Боевые искусства",
+    "chess": "Шахматы",
+    "tennis": "Теннис",
+    "foundation": "Занятия для дошкольников"
+  },
+  
+  "levels": {
+    "foundation": {
+      "label": "Foundation",
+      "yearGroups": ["Early Years", "Reception"],
+      "ageRange": "3-5"
+    },
+    "primary": {
+      "label": "Primary",
+      "yearGroups": ["Year 1", "Year 2", "Year 3", "Year 4", "Year 5", "Year 6"],
+      "ageRange": "5-11"
+    },
+    "secondary": {
+      "label": "Secondary", 
+      "yearGroups": ["Year 7", "Year 8", "Year 9", "Year 10", "Year 11", "Year 12", "Year 13"],
+      "ageRange": "11-18"
+    }
+  },
+  
+  "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  
+  "providers": {
+    "headstart": "HeadStart (школьные)",
+    "cyberone": "CYBERone Phuket",
+    "dome_tennis": "Dome Tennis Club",
+    "rush_sports": "Rush Sports",
+    "judo_school": "JUDO School Phuket",
+    "formula_fun": "Formula Fun (картинг)"
+  },
+  
+  "notes": {
+    "freeSessionsInfo": "3 бесплатных занятия включены, дополнительные - 6,750 THB за Term 2&3",
+    "inviteOnlyInfo": "Некоторые занятия только по приглашению (*Invite Only)"
+  }
+}
+
+
