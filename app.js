@@ -82,6 +82,7 @@ let selectedTimeSlot = 'all';
 
 const EXTRA_FEE = 6750;
 const FREE_SLOTS = 3;
+const EAL_FEE = 25000; // EAL стоит 25,000 бат за весь курс (2 занятия в неделю)
 
 // EAL schedule by year group
 const EAL_SCHEDULE = {
@@ -316,11 +317,12 @@ function hasTimeConflict(activity, selectedActivities, data = null) {
 
 function calculateCost(selectedActivities, data = null) {
   const dataToUse = data || ecaData;
-  if (!dataToUse) return { freeUsed: 0, extraFreeCount: 0, fixedCost: 0, extraCost: 0, totalCost: 0 };
+  if (!dataToUse) return { freeUsed: 0, extraFreeCount: 0, fixedCost: 0, extraCost: 0, totalCost: 0, ealCost: 0 };
   
   let freeUsed = 0;
   let extraFreeCount = 0;
   let fixedCost = 0;
+  let hasEal = false;
 
   for (const actId of selectedActivities) {
     const act = dataToUse.activities.find(a => a.id === actId);
@@ -328,8 +330,14 @@ function calculateCost(selectedActivities, data = null) {
     
     const cat = getActivityCategory(act);
     
-    // EAL, AEN - assigned by school, don't count
-    if (['eal', 'aen'].includes(cat)) {
+    // EAL - проверяем наличие, но не считаем в бесплатных слотах
+    if (cat === 'eal') {
+      hasEal = true;
+      continue; // EAL не считается в бесплатных слотах
+    }
+    
+    // AEN - assigned by school, don't count
+    if (cat === 'aen') {
       if (!act.isFree) fixedCost += act.fee;
       continue;
     }
@@ -345,10 +353,12 @@ function calculateCost(selectedActivities, data = null) {
     }
   }
 
+  // EAL стоит 25,000 бат за весь курс (независимо от количества дней)
+  const ealCost = hasEal ? EAL_FEE : 0;
   const extraCost = extraFreeCount * EXTRA_FEE;
-  const totalCost = fixedCost + extraCost;
+  const totalCost = fixedCost + extraCost + ealCost;
 
-  return { freeUsed, extraFreeCount, fixedCost, extraCost, totalCost };
+  return { freeUsed, extraFreeCount, fixedCost, extraCost, ealCost, totalCost };
 }
 
 // ==================== RENDERING ====================
@@ -373,7 +383,7 @@ function renderChildren() {
   for (const child of children) {
     const selected = child.selectedActivities || [];
     const childEcaData = getEcaDataForChild(child);
-    const cost = childEcaData ? calculateCost(selected, childEcaData) : { totalCost: 0 };
+    const cost = childEcaData ? calculateCost(selected, childEcaData) : { totalCost: 0, ealCost: 0 };
     
     html += `
       <div class="child-card" onclick="selectChild('${escapeAttr(child.id)}')">
@@ -509,10 +519,13 @@ function renderTotalSummary() {
     }
     
     // Показываем расчёт если есть дополнительные занятия
-    if (cost.extraFreeCount > 0 || cost.fixedCost > 0) {
+    if (cost.extraFreeCount > 0 || cost.fixedCost > 0 || cost.ealCost > 0) {
       html += `
         <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); font-size: 0.8rem; color: var(--text-secondary);">
       `;
+      if (cost.ealCost > 0) {
+        html += `<div>EAL (курс): <span style="color: var(--day-fri);">${cost.ealCost.toLocaleString()} ฿</span></div>`;
+      }
       if (cost.extraFreeCount > 0) {
         html += `<div>${t('extraActivitiesCalc')} (${cost.extraFreeCount} × 6,750): <span style="color: var(--warning);">${cost.extraCost.toLocaleString()} ฿</span></div>`;
       }
@@ -1089,8 +1102,11 @@ function generateScheduleImageHtml() {
     
     // Детали расчёта
     let calcHtml = '';
-    if (cost.extraFreeCount > 0 || cost.fixedCost > 0) {
+    if (cost.extraFreeCount > 0 || cost.fixedCost > 0 || cost.ealCost > 0) {
       calcHtml = '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #2a2a3a; font-size: 11px; color: #94a3b8;">';
+      if (cost.ealCost > 0) {
+        calcHtml += `<div>EAL (курс): <span style="color: #fb7185;">${cost.ealCost.toLocaleString()} ฿</span></div>`;
+      }
       if (cost.extraFreeCount > 0) {
         calcHtml += `<div>${t('extraActivitiesCalc')} (${cost.extraFreeCount} × 6,750): <span style="color: #f59e0b;">${cost.extraCost.toLocaleString()} ฿</span></div>`;
       }
@@ -1232,3 +1248,4 @@ async function init() {
 }
 
 init();
+
